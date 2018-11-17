@@ -36,18 +36,24 @@ class CassandraDataCollector extends DataCollector
      */
     public function __construct()
     {
-        $this->data['cassandra'] = new \SplQueue();
+        $this->reset();
     }
 
     /**
-     * {@inheritdoc}
+     * Collect the data.
+     *
+     * @param Request    $request   The request object
+     * @param Response   $response  The response object
+     * @param \Exception $exception An exception
      */
     public function collect(Request $request, Response $response, \Exception $exception = null)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * Return the name of the collector.
+     *
+     * @return string data collector name
      */
     public function getName()
     {
@@ -152,11 +158,11 @@ class CassandraDataCollector extends DataCollector
         $options = $arguments[1];
 
         return [
-            'consistency' => self::getConsistency(isset($options['consistency']) ? $options['consistency'] : null),
-            'serialConsistency' => self::getConsistency(isset($options['serialConsistency']) ? $options['serialConsistency'] : null),
-            'pageSize' => isset($options['pageSize']) ? $options['pageSize'] : null,
-            'timeout' => isset($options['timeout']) ? $options['timeout'] : null,
-            'arguments' => var_export($options['arguments'], true),
+            'consistency' => self::getConsistency($options->consistency),
+            'serialConsistency' => self::getConsistency($options->serialConsistency),
+            'pageSize' => $options->pageSize,
+            'timeout' => $options->timeout,
+            'arguments' => var_export($options->arguments, true),
         ];
     }
 
@@ -176,10 +182,10 @@ class CassandraDataCollector extends DataCollector
         return;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function reset()
     {
+        $this->data['cassandra'] = new \SplQueue();
     }
+
+
 }

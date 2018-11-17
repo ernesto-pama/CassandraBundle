@@ -1,5 +1,5 @@
 {
-    "name": "hendrahuang/cassandra-bundle",
+    "name": "ernesto-pama/cassandra-bundle",
     "type" : "symfony-bundle",
     "description": "Symfony2 / Symfony 3 bundle on top of datastax/php-driver",
     "keywords": ["cassandra", "bundle", "symfony2", "symfony3"],

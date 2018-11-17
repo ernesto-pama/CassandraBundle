@@ -254,7 +254,7 @@ class Connection
      *
      * @return mixed
      */
-    protected function prepareResponse($response, CassandraEvent $event = null)
+    public function prepareResponse($response, CassandraEvent $event = null)
     {
         if (is_null($event)) {
             return $response;
@@ -278,7 +278,7 @@ class Connection
      *
      * @return CassandraEvent|null Return null if no eventDispatcher available
      */
-    protected function prepareEvent($command, array $args)
+    public function prepareEvent($command, array $args)
     {
         if (is_null($this->getEventDispatcher())) {
             return;
@@ -301,7 +301,7 @@ class Connection
      *
      * @return mixed
      */
-    protected function send($command, array $arguments)
+    public function send($command, array $arguments)
     {
         $event = $this->prepareEvent($command, $arguments);
 

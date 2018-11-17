@@ -3,7 +3,9 @@
 namespace CassandraBundle\Cassandra\ORM;
 
 use Cassandra\BatchStatement;
+use Cassandra\ExecutionOptions;
 use Cassandra\Session;
+use Cassandra\Statement;
 use Cassandra\Type;
 use CassandraBundle\Cassandra\Connection;
 use CassandraBundle\Cassandra\ORM\Mapping\ClassMetadata;
@@ -309,14 +311,6 @@ class EntityManager implements Session, EntityManagerInterface
             if ($columnValue instanceOf \Cassandra\Timestamp) {
                 return $columnValue->time();
             }
-            // Cassandra\Date class
-            if ($columnValue instanceOf \Cassandra\Date) {
-                return $columnValue->seconds();
-            }
-            // Cassandra\Time class
-            if ($columnValue instanceOf \Cassandra\Time) {
-                return $columnValue->seconds();
-            }
             // Cassandra\Map class
             if ($columnValue instanceOf \Cassandra\Map) {
                 $decodedKeys = [];
@@ -402,7 +396,7 @@ class EntityManager implements Session, EntityManagerInterface
 
     public function prepareArguments($arguments)
     {
-        return [self::ARGUMENTS => $arguments];
+        return new ExecutionOptions([self::ARGUMENTS => $arguments]);
     }
 
     /**
@@ -464,14 +458,6 @@ class EntityManager implements Session, EntityManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function metrics()
-    {
-        return $this->connection->metrics();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function prepareResponse($response, CassandraEvent $event = null)
     {
         return $this->connection->prepareResponse($response, $event);
@@ -515,5 +501,10 @@ class EntityManager implements Session, EntityManagerInterface
         }
 
         return $query;
+    }
+
+    public function metrics()
+    {
+        // TODO: Implement metrics() method.
     }
 }
