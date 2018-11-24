@@ -159,11 +159,32 @@ class EntityManager implements Session, EntityManagerInterface
      * @param object $entity
      * @param Options|null $options
      *
-     * @deprecated update method will be deprecated since version 1.3 and will be removed in 1.5
      */
     public function update($entity, Options $options = null)
     {
-        return $this->insert($entity, $options);
+        $metadata = $this->getClassMetadata(get_class($entity));
+        $tableName = $metadata->table['name'];
+        $values = $this->readColumn($entity, $metadata);
+        unset($values['id']);
+        $columns = array_keys($values);
+
+        $statement = sprintf(
+            'UPDATE "%s"."%s" SET %s ',
+            $this->getKeyspace(),
+            $tableName,
+            implode(', ', array_map(function ($column) {
+                return sprintf('%s = ?', $column);
+            }, $columns))
+        );
+
+        $statement .= sprintf(" WHERE id = %s", $entity->getId());
+
+        $statement = $this->decorateInsertStatement($statement, $metadata, $options);
+
+        $this->statements[] = [
+            self::STATEMENT => $statement,
+            self::ARGUMENTS => $values,
+        ];
     }
 
     /**
@@ -201,6 +222,8 @@ class EntityManager implements Session, EntityManagerInterface
                 $this->logger->debug('CASSANDRA: ' . $statement[self::STATEMENT] . ' => ' . json_encode($statement[self::ARGUMENTS]));
                 $batch->add($this->prepare($statement[self::STATEMENT]), $statement[self::ARGUMENTS]);
             }
+
+
 
             if ($async) {
                 $this->executeAsync($batch);
@@ -384,9 +407,9 @@ class EntityManager implements Session, EntityManagerInterface
      *
      * @param ClassMetadata $metadata The metadata of the entity to find.
      *
-     * @return ArrayCollection The array of entity instance or empty array if the entity can not be found.
+     * @return array The array of entity instance or empty array if the entity can not be found.
      */
-    public function findAll(ClassMetadata $metadata)
+    public function findAll(ClassMetadata $metadata):array
     {
         $cql = sprintf('SELECT * FROM %s', $metadata->table['name']);
         $query = $this->createQuery($metadata, $cql);

@@ -95,6 +95,7 @@ class Query
     public function getOneOrNullResult($hydrationMode = self::HYDRATE_OBJECT)
     {
         $result = $this->execute();
+        $hydratedData = null;
         if ($result && $data = $result->first()) {
             $rowData = $this->_em->cleanRow($data);
             $hydratedData = $this->_em->newHydrator($this->metadata, $hydrationMode)->hydrateRowData($rowData);
@@ -102,7 +103,7 @@ class Query
             return $hydratedData;
         }
 
-        return;
+        return $hydratedData;
     }
 
     public function getResult($hydrationMode = self::HYDRATE_OBJECT)

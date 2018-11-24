@@ -67,7 +67,6 @@ class EntityRepository
 
     /**
      * @param string $id
-     * @param string $class
      *
      * @return object
      */
@@ -77,11 +76,9 @@ class EntityRepository
     }
 
     /**
-     * @param string $class
-     *
-     * @return ArrayCollection
+     * @return array
      */
-    public function findAll()
+    public function findAll(): array
     {
         return $this->_em->findAll($this->_class);
     }
