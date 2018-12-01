@@ -9,3 +9,7 @@ services:
         class: "CassandraBundle\\Cassandra\\ORM\\Tools\\SchemaCreate"
         arguments: ["@service_container"]
         public: true
+
+    CassandraBundle\Command\SchemaCreateCommand:
+        tags:
+            - { name: 'console.command', command: 'cassandra:schema:create' }
